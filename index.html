@@ -5,9 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#C8102E">
 <title>Relevé SERM HDF</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* AREP typography — Segoe UI first, clean sans-serif fallbacks */
+:root {
+  --font-sans: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  --font-display: "Segoe UI Semibold", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+}
+</style>
 <style>
 :root {
   --red: #C8102E;
@@ -27,7 +31,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; }
 body {
-  font-family: 'Public Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   background: var(--paper);
   color: var(--ink);
   font-size: 15px;
@@ -35,7 +39,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: contain;
 }
-h1, h2, h3, .serif { font-family: 'Fraunces', Georgia, serif; font-weight: 500; letter-spacing: -0.01em; }
+h1, h2, h3, .serif { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.015em; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 
 /* ------- APP SHELL ------- */
@@ -50,13 +54,12 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 }
 .topbar-left { display: flex; align-items: center; gap: 10px; }
 .logo {
-  width: 28px; height: 28px; background: var(--red);
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px;
-  color: var(--paper); border-radius: 2px;
+  height: 26px; width: auto; display: block;
+  border-radius: 2px; flex-shrink: 0;
+  image-rendering: -webkit-optimize-contrast;
 }
 .topbar-title {
-  font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px;
+  font-family: var(--font-display); font-weight: 600; font-size: 14px;
   letter-spacing: 0.02em;
 }
 .topbar-title span { opacity: 0.6; font-weight: 400; }
@@ -69,15 +72,15 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 /* ------- HOME ------- */
 .home { padding: 24px 20px 120px; flex: 1; }
 .home-kicker {
-  font-family: 'Fraunces', serif; font-style: italic;
+  font-family: var(--font-sans); font-style: normal;
   color: var(--red); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
   margin-bottom: 6px; font-weight: 500;
 }
 .home-title {
-  font-size: 32px; font-weight: 500; line-height: 1.1;
-  margin-bottom: 20px;
+  font-size: 32px; font-weight: 700; line-height: 1.05; letter-spacing: -0.025em;
+  margin-bottom: 20px; text-transform: none;
 }
-.home-title em { font-style: italic; color: var(--red); font-weight: 400; }
+.home-title em { font-style: normal; color: var(--red); font-weight: 700; }
 .home-lead {
   color: var(--ink-soft); font-size: 15px; line-height: 1.5;
   margin-bottom: 28px; max-width: 44ch;
@@ -85,7 +88,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .home-lead strong { color: var(--ink); font-weight: 600; }
 
 .section-heading {
-  font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500;
+  font-family: var(--font-display); font-size: 12px; font-weight: 600;
   text-transform: uppercase; letter-spacing: 0.1em;
   color: var(--taupe); margin: 24px 0 12px;
   display: flex; align-items: baseline; justify-content: space-between;
@@ -127,7 +130,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .visite-card-info h4 { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
 .visite-card-meta { font-size: 12px; color: var(--taupe); display: flex; gap: 10px; }
 .visite-card-progress {
-  font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500;
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
   color: var(--red); font-variant-numeric: tabular-nums;
 }
 .visite-card-progress .pct { font-size: 14px; opacity: 0.7; margin-left: 1px; }
@@ -137,7 +140,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .gare-search {
   background: var(--white); border: 1px solid var(--border);
   border-radius: 3px; padding: 14px 16px; font-size: 16px;
-  font-family: inherit; width: 100%; margin-bottom: 12px;
+  font-family: var(--font-sans); width: 100%; margin-bottom: 12px;
 }
 .gare-search:focus { outline: none; border-color: var(--red); }
 .gare-list { max-height: 60vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 3px; background: var(--white); }
@@ -167,7 +170,7 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
 }
 .form-gare-name {
-  font-family: 'Fraunces', serif; font-size: 24px; font-weight: 500; line-height: 1.1;
+  font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em;
 }
 .form-gare-meta { font-size: 11px; color: var(--taupe); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 4px; }
 .progress-ring {
@@ -193,12 +196,12 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 }
 .section-header:active { background: var(--paper); }
 .section-num {
-  font-family: 'Fraunces', serif; font-weight: 400; font-size: 28px;
-  color: var(--red); font-style: italic; line-height: 1;
+  font-family: var(--font-display); font-weight: 700; font-size: 26px;
+  color: var(--red); font-style: normal; line-height: 1;
   width: 30px; flex-shrink: 0;
 }
 .section-title {
-  flex: 1; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500;
+  flex: 1; font-family: var(--font-display); font-size: 17px; font-weight: 600; letter-spacing: -0.01em;
 }
 .section-status {
   font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
@@ -974,7 +977,7 @@ async function renderHome() {
   app.innerHTML = `
     <div class="topbar">
       <div class="topbar-left">
-        <div class="logo">R</div>
+        <img class="logo" src="data:image/jpeg;base64,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" alt="AREP">
         <div class="topbar-title">Relevé <span>SERM HDF</span></div>
       </div>
       <button class="topbar-action" onclick="showExportMenu()">Exporter</button>
