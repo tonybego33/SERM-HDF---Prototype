@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#C8102E">
+<title>Relevé SERM HDF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #C8102E;
+  --red-dark: #9E0B24;
+  --ink: #1A1A1A;
+  --ink-soft: #3D3D3D;
+  --paper: #F5F2EB;
+  --paper-light: #FAF8F3;
+  --taupe: #8B8680;
+  --border: #D9D3C4;
+  --green: #1D5E3A;
+  --amber: #C77800;
+  --red-soft: #E8475B;
+  --white: #FFFFFF;
+  --shadow: 0 1px 2px rgba(26,26,26,0.04), 0 4px 12px rgba(26,26,26,0.06);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  font-family: 'Public Sans', system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: contain;
+}
+h1, h2, h3, .serif { font-family: 'Fraunces', Georgia, serif; font-weight: 500; letter-spacing: -0.01em; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+
+/* ------- APP SHELL ------- */
+.app { max-width: 560px; margin: 0 auto; min-height: 100vh; background: var(--paper-light); position: relative; display: flex; flex-direction: column; }
+
+/* ------- HEADER ------- */
+.topbar {
+  background: var(--ink); color: var(--paper);
+  padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;
+  position: sticky; top: 0; z-index: 50;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.topbar-left { display: flex; align-items: center; gap: 10px; }
+.logo {
+  width: 28px; height: 28px; background: var(--red);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px;
+  color: var(--paper); border-radius: 2px;
+}
+.topbar-title {
+  font-family: 'Fraunces', serif; font-weight: 500; font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.topbar-title span { opacity: 0.6; font-weight: 400; }
+.topbar-action {
+  color: var(--paper); font-size: 14px; padding: 6px 10px;
+  border-radius: 3px; border: 1px solid rgba(245,242,235,0.2);
+}
+.topbar-action:active { background: rgba(245,242,235,0.1); }
+
+/* ------- HOME ------- */
+.home { padding: 24px 20px 120px; flex: 1; }
+.home-kicker {
+  font-family: 'Fraunces', serif; font-style: italic;
+  color: var(--red); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px; font-weight: 500;
+}
+.home-title {
+  font-size: 32px; font-weight: 500; line-height: 1.1;
+  margin-bottom: 20px;
+}
+.home-title em { font-style: italic; color: var(--red); font-weight: 400; }
+.home-lead {
+  color: var(--ink-soft); font-size: 15px; line-height: 1.5;
+  margin-bottom: 28px; max-width: 44ch;
+}
+.home-lead strong { color: var(--ink); font-weight: 600; }
+
+.section-heading {
+  font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--taupe); margin: 24px 0 12px;
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.section-heading::after {
+  content: ''; flex: 1; height: 1px; background: var(--border); margin-left: 12px;
+}
+.section-heading-count { color: var(--ink-soft); font-size: 12px; letter-spacing: 0; }
+
+.btn-primary {
+  display: block; width: 100%; padding: 16px 20px;
+  background: var(--red); color: var(--paper-light);
+  font-weight: 600; font-size: 16px; letter-spacing: 0.01em;
+  border-radius: 3px; text-align: center;
+  box-shadow: var(--shadow);
+  transition: background 0.15s, transform 0.1s;
+}
+.btn-primary:active { background: var(--red-dark); transform: translateY(1px); }
+.btn-secondary {
+  display: block; width: 100%; padding: 14px 18px;
+  background: var(--white); color: var(--ink);
+  border: 1px solid var(--border);
+  font-weight: 500; font-size: 15px;
+  border-radius: 3px; text-align: center;
+  margin-top: 10px;
+}
+.btn-secondary:active { background: var(--paper); }
+
+/* ------- VISITES LIST ------- */
+.visites-list { display: flex; flex-direction: column; gap: 8px; }
+.visite-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 3px; padding: 14px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 12px; cursor: pointer;
+  transition: border-color 0.15s;
+}
+.visite-card:active { border-color: var(--red); }
+.visite-card-info h4 { font-weight: 600; font-size: 15px; margin-bottom: 2px; }
+.visite-card-meta { font-size: 12px; color: var(--taupe); display: flex; gap: 10px; }
+.visite-card-progress {
+  font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500;
+  color: var(--red); font-variant-numeric: tabular-nums;
+}
+.visite-card-progress .pct { font-size: 14px; opacity: 0.7; margin-left: 1px; }
+.empty { color: var(--taupe); font-size: 14px; padding: 12px 0; font-style: italic; }
+
+/* ------- GARE PICKER ------- */
+.gare-search {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 3px; padding: 14px 16px; font-size: 16px;
+  font-family: inherit; width: 100%; margin-bottom: 12px;
+}
+.gare-search:focus { outline: none; border-color: var(--red); }
+.gare-list { max-height: 60vh; overflow-y: auto; border: 1px solid var(--border); border-radius: 3px; background: var(--white); }
+.gare-item {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: baseline;
+  cursor: pointer;
+}
+.gare-item:last-child { border-bottom: none; }
+.gare-item:active { background: var(--paper); }
+.gare-item-name { font-weight: 500; }
+.gare-item-meta { font-size: 11px; color: var(--taupe); letter-spacing: 0.04em; text-transform: uppercase; }
+.gare-done { position: relative; }
+.gare-done::after {
+  content: '✓'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  color: var(--green); font-weight: bold;
+}
+.gare-done .gare-item-name { padding-right: 20px; }
+
+/* ------- VISITE FORM ------- */
+.form-header {
+  padding: 20px 20px 14px; background: var(--paper-light);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 54px; z-index: 40;
+}
+.form-header-row {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+}
+.form-gare-name {
+  font-family: 'Fraunces', serif; font-size: 24px; font-weight: 500; line-height: 1.1;
+}
+.form-gare-meta { font-size: 11px; color: var(--taupe); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 4px; }
+.progress-ring {
+  width: 42px; height: 42px; position: relative; flex-shrink: 0;
+}
+.progress-ring svg { transform: rotate(-90deg); }
+.progress-ring-bg { fill: none; stroke: var(--border); stroke-width: 4; }
+.progress-ring-fg { fill: none; stroke: var(--red); stroke-width: 4; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease; }
+.progress-ring-label {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ink);
+}
+
+/* Section accordion */
+.section {
+  border-bottom: 1px solid var(--border);
+  background: var(--paper-light);
+}
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; width: 100%; text-align: left;
+  transition: background 0.15s;
+}
+.section-header:active { background: var(--paper); }
+.section-num {
+  font-family: 'Fraunces', serif; font-weight: 400; font-size: 28px;
+  color: var(--red); font-style: italic; line-height: 1;
+  width: 30px; flex-shrink: 0;
+}
+.section-title {
+  flex: 1; font-family: 'Fraunces', serif; font-size: 18px; font-weight: 500;
+}
+.section-status {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--taupe); font-variant-numeric: tabular-nums;
+}
+.section-status.done { color: var(--green); }
+.section-chevron { color: var(--taupe); transition: transform 0.2s; font-size: 18px; }
+.section.open .section-chevron { transform: rotate(90deg); }
+
+.section-body {
+  display: none; padding: 4px 20px 20px; background: var(--white);
+  border-top: 1px solid var(--border);
+}
+.section.open .section-body { display: block; }
+
+/* Criterion */
+.criterion { padding: 14px 0; border-bottom: 1px solid var(--paper); }
+.criterion:last-child { border-bottom: none; }
+.criterion-label {
+  font-weight: 500; font-size: 14px; line-height: 1.35; margin-bottom: 10px;
+  display: flex; gap: 6px; align-items: baseline;
+}
+.criterion-label .req { color: var(--red); font-size: 10px; margin-top: -2px; }
+.criterion-help { font-size: 12px; color: var(--taupe); margin-top: 2px; margin-bottom: 10px; line-height: 1.4; }
+
+.rating { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.rating-btn {
+  padding: 12px 6px; border: 1.5px solid var(--border);
+  background: var(--white); border-radius: 3px;
+  font-size: 13px; font-weight: 500; color: var(--ink-soft);
+  transition: all 0.15s; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 56px;
+}
+.rating-btn .dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--border);
+  margin-bottom: 2px; transition: background 0.15s;
+}
+.rating-btn[data-val="0"].active { border-color: var(--red-soft); background: #FDF1F3; color: var(--red-dark); }
+.rating-btn[data-val="0"].active .dot { background: var(--red-soft); }
+.rating-btn[data-val="0.5"].active { border-color: var(--amber); background: #FDF6EB; color: var(--amber); }
+.rating-btn[data-val="0.5"].active .dot { background: var(--amber); }
+.rating-btn[data-val="1"].active { border-color: var(--green); background: #ECF4EF; color: var(--green); }
+.rating-btn[data-val="1"].active .dot { background: var(--green); }
+.rating-btn[data-val="na"].active { border-color: var(--taupe); background: var(--paper); color: var(--ink-soft); }
+.rating-btn[data-val="na"].active .dot { background: var(--taupe); }
+.rating-btn:active { transform: scale(0.97); }
+
+/* 2-column variant */
+.rating.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.rating.cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+.criterion-extras {
+  margin-top: 10px; display: none;
+}
+.criterion.has-note .criterion-extras, .criterion.force-extras .criterion-extras { display: block; }
+.extras-toggle {
+  margin-top: 8px; font-size: 12px; color: var(--taupe); font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.extras-toggle:active { color: var(--red); }
+.criterion-note {
+  width: 100%; padding: 10px 12px; font-family: inherit; font-size: 14px;
+  border: 1px solid var(--border); border-radius: 3px;
+  background: var(--paper-light); resize: vertical; min-height: 60px;
+}
+.criterion-note:focus { outline: none; border-color: var(--red); background: var(--white); }
+
+.photo-input-wrap {
+  display: flex; gap: 8px; margin-top: 8px;
+}
+.photo-btn {
+  padding: 10px 12px; border: 1px dashed var(--border); border-radius: 3px;
+  font-size: 12px; color: var(--taupe); text-align: center; flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.photo-btn:active { border-color: var(--red); color: var(--red); }
+.photo-count { font-weight: 600; color: var(--red); }
+.photos-preview { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; padding-bottom: 4px; }
+.photo-thumb { width: 64px; height: 64px; border-radius: 3px; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border); }
+
+/* Bottom Action Bar */
+.bottom-bar {
+  position: sticky; bottom: 0; background: var(--white);
+  border-top: 1px solid var(--border); padding: 12px 16px;
+  display: flex; gap: 10px; z-index: 45;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+}
+.bottom-bar button { flex: 1; padding: 12px; font-weight: 600; font-size: 14px; border-radius: 3px; }
+.bar-save { background: var(--ink); color: var(--paper); }
+.bar-save:active { background: #000; }
+.bar-export { background: var(--red); color: var(--white); }
+.bar-export:active { background: var(--red-dark); }
+
+/* General info card */
+.info-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: 3px;
+  padding: 16px 16px 8px; margin: 16px 20px;
+}
+.info-field { margin-bottom: 12px; }
+.info-label {
+  display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--taupe); margin-bottom: 4px;
+}
+.info-input {
+  width: 100%; padding: 10px 12px; font-family: inherit; font-size: 15px;
+  border: 1px solid var(--border); border-radius: 3px; background: var(--paper-light);
+}
+.info-input:focus { outline: none; border-color: var(--red); background: var(--white); }
+.info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: var(--paper); padding: 10px 18px;
+  border-radius: 3px; font-size: 13px; font-weight: 500;
+  opacity: 0; transition: all 0.25s; z-index: 100; pointer-events: none;
+  box-shadow: var(--shadow); max-width: 80vw;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(26,26,26,0.5);
+  display: none; align-items: flex-end; justify-content: center; z-index: 200;
+  animation: fade 0.2s;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--paper-light); width: 100%; max-width: 560px;
+  border-radius: 8px 8px 0 0; padding: 20px;
+  max-height: 80vh; overflow-y: auto;
+  animation: slideup 0.25s;
+}
+.modal h3 { font-size: 20px; margin-bottom: 14px; }
+.modal p { font-size: 14px; color: var(--ink-soft); margin-bottom: 14px; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideup { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+/* Decorative accents */
+.accent-line {
+  height: 3px; width: 40px; background: var(--red); margin-top: 2px; margin-bottom: 16px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* Hide scroll on home */
+.home::-webkit-scrollbar { display: none; }
+
+@media (min-width: 600px) {
+  .app { box-shadow: var(--shadow); min-height: 100vh; }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<!-- dynamically rendered -->
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="modal"><div class="modal" id="modal-content"></div></div>
+
+<script>
+/* ==========================================================================
+   DONNÉES : GARES + GRILLE DE NOTATION CONSOLIDÉE
+   ========================================================================== */
+
+const GARES = [{"nom": "Annappes", "uic": 87286856, "epci": "MEL", "axe": "Ascq-Lille", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B02", "ligne_sncf": "269"}, {"nom": "Armentières", "uic": 87286146, "epci": "MEL", "axe": "Hazebrouck-Lille", "cat_gc": "Interconnexion SERM", "cat_sgp": "PEM urbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B10", "ligne_sncf": "293, 295"}, {"nom": "Arras", "uic": 87342014, "epci": "CUA", "axe": "Arras", "cat_gc": "Interconnexion nationale", "cat_sgp": "PEM de centralité", "cat_pro": "1- Pôles régionaux – rôle de diffusion ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": "301, 272"}, {"nom": "Ascq", "uic": 87286864, "epci": "MEL", "axe": "Ascq-Lille", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 2", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B02", "ligne_sncf": "269"}, {"nom": "Avion", "uic": 87342584, "epci": "CALL", "axe": "Arras-Lens", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": "301"}, {"nom": "Bailleul", "uic": 87286179, "epci": "Cœur de Flandres Agglo", "axe": "Hazebrouck-Lille", "cat_gc": "Zone dense", "cat_sgp": "PEM urbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 3", "etat": "Partiellement constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B10", "ligne_sncf": "295"}, {"nom": "Bailleul-Sir-Berthoult", "uic": 87342592, "epci": "CUA", "axe": "Arras-Lens", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 3", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": "301"}, {"nom": "Baisieux", "uic": 87286872, "epci": "MEL", "axe": "Ascq-Lille", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Gare périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B02", "ligne_sncf": "269"}, {"nom": "Bauvin - Provin", "uic": 87345280, "epci": "MEL", "axe": "Don-Lens", "cat_gc": "Zone dense", "cat_sgp": "Halte périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B07", "ligne_sncf": "286"}, {"nom": "Beuvrages", "uic": 87343160, "epci": "CAVM", "axe": "Douai-Valenciennes", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Gare urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": "262"}, {"nom": "Beuvry lès Béthune", "uic": 87342402, "epci": "CABBALR", "axe": "Béthune-Don", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B09", "ligne_sncf": "289"}, {"nom": "Biache-Saint-Vaast", "uic": 87342097, "epci": "CC Osartis-Marquion", "axe": "Arras-Douai", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Gare périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": 272}, {"nom": "Billy-Montigny", "uic": 87345140, "epci": "CALL", "axe": "Lens-Libercourt", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 2", "etat": "Non constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B06", "ligne_sncf": "284"}, {"nom": "Brebières", "uic": 87345108, "epci": "CC Osartis-Marquion", "axe": "Arras-Douai", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": 272}, {"nom": "Bully - Grenay", "uic": 87342105, "epci": "CALL", "axe": "Béthune-Lens", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B09", "ligne_sncf": 301}, {"nom": "Béthune", "uic": 87342006, "epci": "CABBALR", "axe": "Béthune", "cat_gc": "Interconnexion nationale", "cat_sgp": "PEM de centralité", "cat_pro": "1- Pôles régionaux – rôle de diffusion ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B09", "ligne_sncf": "289"}, {"nom": "Chocques", "uic": 87342220, "epci": "CABBALR", "axe": "Béthune-Hazebrouck", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B11", "ligne_sncf": "301"}, {"nom": "Corbehem", "uic": 87345116, "epci": "CC Osartis-Marquion", "axe": "Arras-Douai", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Gare périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": 272}, {"nom": "Coron de Méricourt", "uic": 87345132, "epci": "CALL", "axe": "Lens-Libercourt", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B06", "ligne_sncf": "284"}, {"nom": "Croix - Wasquehal", "uic": 87286716, "epci": "MEL", "axe": "Lille-Tourcoing ", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B01", "ligne_sncf": "278"}, {"nom": "Croix L'Allumette", "uic": 87281055, "epci": "MEL", "axe": "Lille-Tourcoing ", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B01", "ligne_sncf": "278"}, {"nom": "Cuinchy", "uic": 87342410, "epci": "CABBALR", "axe": "Béthune-Don", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B09", "ligne_sncf": "289"}, {"nom": "Don - Sainghin", "uic": 87286435, "epci": "MEL", "axe": "Don-Sainghin", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "PEM périurbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 1", "etat": "Partiellement constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B07", "ligne_sncf": "289"}, {"nom": "Douai", "uic": 87345009, "epci": "CAD", "axe": "Douai", "cat_gc": "Interconnexion nationale", "cat_sgp": "PEM de centralité", "cat_pro": "1- Pôles régionaux – rôle de diffusion ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B08", "ligne_sncf": "259, 272"}, {"nom": "Dourges", "uic": 87345165, "epci": "CAHC", "axe": "Lens-Libercourt", "cat_gc": "Zone dense", "cat_sgp": "Gare périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 2", "etat": "Non constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B06", "ligne_sncf": "284"}, {"nom": "Ennevelin", "uic": 87287276, "epci": "CCPC", "axe": "Lille-Orchies", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 3", "etat": "Péri-Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Farbus", "uic": 87342527, "epci": "CUA", "axe": "Arras-Lens", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 3", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": "301"}, {"nom": "Fouquereuil", "uic": 87342204, "epci": "CABBALR", "axe": "Béthune-Hazebrouck", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B11", "ligne_sncf": "301"}, {"nom": "Fretin", "uic": 87286641, "epci": "MEL", "axe": "Lille-Orchies", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Ham-en-Artois", "uic": 87342261, "epci": "CABBALR", "axe": "Béthune-Hazebrouck", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 3", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B11", "ligne_sncf": "301"}, {"nom": "Haubourdin", "uic": 87286096, "epci": "MEL", "axe": "Don-lille", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "289"}, {"nom": "Hazebrouck", "uic": 87286302, "epci": "Cœur de Flandres agglo", "axe": "Hazebrouck", "cat_gc": "Interconnexion nationale", "cat_sgp": "PEM de centralité", "cat_pro": "1- Pôles régionaux – rôle de diffusion ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Littoral", "ligne_flux": "B10", "ligne_sncf": "295"}, {"nom": "Hellemmes", "uic": 87286062, "epci": "MEL", "axe": "Ascq-Lille", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B02", "ligne_sncf": "269"}, {"nom": "Hénin-Beaumont", "uic": 87345157, "epci": "CAHC", "axe": "Lens-Libercourt", "cat_gc": "Interconnexion SERM", "cat_sgp": "PEM urbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 1", "etat": "Partiellement constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B06", "ligne_sncf": "284"}, {"nom": "Isbergues", "uic": 87342279, "epci": "CABBALR", "axe": "Béthune-Hazebrouck", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Gare périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B11", "ligne_sncf": "301"}, {"nom": "La Bassée - Violaines", "uic": 87342436, "epci": "MEL", "axe": "Béthune-Don", "cat_gc": "Zone dense", "cat_sgp": "PEM périurbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B09", "ligne_sncf": "289"}, {"nom": "La Madeleine", "uic": 87286187, "epci": "MEL", "axe": "Hazebrouck-Lille", "cat_gc": "Interconnexion SERM", "cat_sgp": "Gare urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "295"}, {"nom": "Landas", "uic": 87286575, "epci": "CCPC", "axe": "Orchies-Valenciennes", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Leforest", "uic": 87345223, "epci": "CAHC", "axe": "Douai-Lille", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Gare périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": 272}, {"nom": "Lens", "uic": 87345025, "epci": "CALL", "axe": "Lens", "cat_gc": "Interconnexion nationale", "cat_sgp": "PEM de centralité", "cat_pro": "1- Pôles régionaux – rôle de diffusion ", "prio": "Priorité 1", "etat": "Partiellement constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B06", "ligne_sncf": 301}, {"nom": "Lesquin", "uic": 87286849, "epci": "MEL", "axe": "Lille-Orchies", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 2", "etat": "Non constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Lesquin Aéroport", "uic": "Nouvelle Gare", "epci": "MEL", "axe": "REHF", "cat_gc": "Interconnexion SERM", "cat_sgp": "PEM périurbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 2", "etat": "Non constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Lezennes", "uic": 87287102, "epci": "MEL", "axe": "Ascq-Lille", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B02", "ligne_sncf": "269"}, {"nom": "Libercourt", "uic": 87345256, "epci": "CAHC", "axe": "Lens-Libercourt", "cat_gc": "Zone dense", "cat_sgp": "PEM périurbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 3", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B06", "ligne_sncf": 272}, {"nom": "Lille CHR", "uic": 87109306, "epci": "MEL", "axe": "Don-lille", "cat_gc": "Interconnexion SERM", "cat_sgp": "Halte urbaine", "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "289"}, {"nom": "Lille Délivrance", "uic": "Point d'arrêt nouveau", "epci": "MEL", "axe": "Tangentielle Ouest", "cat_gc": "Zone dense", "cat_sgp": null, "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 3", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "292"}, {"nom": "Lille Porte de Douai", "uic": 87287250, "epci": "MEL", "axe": "Don-lille", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "289"}, {"nom": "Lille Sud", "uic": "Nouvelle Gare", "epci": "MEL", "axe": "Don-Lille", "cat_gc": "Interconnexion SERM", "cat_sgp": "PEM urbain", "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 2", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "289"}, {"nom": "Lillers", "uic": 87342238, "epci": "CABBALR", "axe": "Béthune-Hazebrouck", "cat_gc": "Zone dense", "cat_sgp": "Gare périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B11", "ligne_sncf": "301"}, {"nom": "Liévin", "uic": 87345041, "epci": "CALL", "axe": "Béthune-Lens", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B09", "ligne_sncf": 301}, {"nom": "Loison-sous-Lens", "uic": 87345231, "epci": "CALL", "axe": "Don-Lens", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Gare urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B07", "ligne_sncf": "286"}, {"nom": "Lomme", "uic": "Point d'arrêt nouveau", "epci": "MEL", "axe": "Tangentielle Ouest", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "292"}, {"nom": "Loos lez Lille", "uic": 87286112, "epci": "MEL", "axe": "Don-lille", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "289"}, {"nom": "Loos-en-Gohelle", "uic": 87345033, "epci": "CALL", "axe": "Béthune-Lens", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B09", "ligne_sncf": 301}, {"nom": "Marquillies", "uic": 87342469, "epci": "MEL", "axe": "Béthune-Don", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B09", "ligne_sncf": "289"}, {"nom": "Mazingarbe", "uic": 87342121, "epci": "CALL", "axe": "Béthune-Lens", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B09", "ligne_sncf": 301}, {"nom": "Meurchin", "uic": 87345272, "epci": "CALL", "axe": "Don-Lens", "cat_gc": "Zone dense", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Péri-Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B07", "ligne_sncf": "286"}, {"nom": "Mont de Terre", "uic": 87287128, "epci": "MEL", "axe": "Lille-Orchies", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Montigny-en-Ostrevent", "uic": 87345306, "epci": "Cœur d'Ostrevent Agglo", "axe": "Douai-Valenciennes", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Gare périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": "262"}, {"nom": "Nieppe", "uic": 87287151, "epci": "Cœur de Flandres Agglo", "axe": "Hazebrouck-Lille", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B10", "ligne_sncf": "295"}, {"nom": "Nomain", "uic": 87286609, "epci": "CCPC", "axe": "Lille-Orchies", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 3", "etat": "Péri-Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Nœux-les-Mines", "uic": 87342139, "epci": "CABBALR", "axe": "Béthune-Lens", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Gare urbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 2", "etat": "Non constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B09", "ligne_sncf": 301}, {"nom": "Orchies", "uic": 87286583, "epci": "CCPC", "axe": "Lille-Orchies", "cat_gc": "Interconnexion SERM", "cat_sgp": "PEM périurbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 1", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Ostricourt", "uic": 87345249, "epci": "CCPC", "axe": "Douai-Lille", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": 272}, {"nom": "Phalempin", "uic": 87286500, "epci": "CCPC", "axe": "Douai-Lille", "cat_gc": "Zone dense", "cat_sgp": "PEM périurbain", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": 272}, {"nom": "Pont de Bois", "uic": 87286831, "epci": "MEL", "axe": "Ascq-Lille", "cat_gc": "Zone dense", "cat_sgp": "PEM urbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B02", "ligne_sncf": "269"}, {"nom": "Pont de Sallaumines", "uic": 87345124, "epci": "CALL", "axe": "Lens-Libercourt", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B06", "ligne_sncf": "284"}, {"nom": "Pont de la Deûle", "uic": 87345207, "epci": "CAD", "axe": "Douai-Lille", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": 272}, {"nom": "Pont-à -Vendin", "uic": 87345264, "epci": "CALL", "axe": "Don-Lens", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Artois Ternois", "ligne_flux": "B07", "ligne_sncf": "286"}, {"nom": "Pérenchies", "uic": 87286278, "epci": "MEL", "axe": "Hazebrouck-Lille", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B10", "ligne_sncf": "295"}, {"nom": "Raismes", "uic": 87343319, "epci": "CAPH", "axe": "Douai-Valenciennes", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Gare urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": "262"}, {"nom": "Ronchin", "uic": 87286534, "epci": "MEL", "axe": "Douai-Lille", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": 272}, {"nom": "Rosult", "uic": 87286567, "epci": "CAPH", "axe": "Orchies-Valenciennes", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Roubaix", "uic": 87286732, "epci": "MEL", "axe": "Lille-Tourcoing ", "cat_gc": "Interconnexion nationale", "cat_sgp": "PEM de centralité", "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 3", "etat": "Partiellement constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B01", "ligne_sncf": "278"}, {"nom": "Rœux", "uic": 87342089, "epci": "CUA", "axe": "Arras-Douai", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": 272}, {"nom": "Saint-Amand-les-Eaux", "uic": 87343103, "epci": "CAPH", "axe": "Orchies-Valenciennes", "cat_gc": "Interconnexion SERM", "cat_sgp": "PEM urbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Saint-André-lez-Lille", "uic": 87286195, "epci": "MEL", "axe": "Hazebrouck-Lille", "cat_gc": "Zone dense", "cat_sgp": "Gare urbaine", "cat_pro": "3bis- Pôles d’Entrée Urbaine – rôle de diffusion de proximité et correspondance", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "295"}, {"nom": "Sallaumines", "uic": 87345215, "epci": "CALL", "axe": "Don-Lens", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B07", "ligne_sncf": "286"}, {"nom": "Salomé", "uic": 87342451, "epci": "MEL", "axe": "Béthune-Don", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 3", "etat": "Péri-Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B09", "ligne_sncf": "289"}, {"nom": "Santes", "uic": 87286401, "epci": "MEL", "axe": "Don-lille", "cat_gc": "Zone dense", "cat_sgp": "Gare périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Péri-Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B07", "ligne_sncf": 289}, {"nom": "Seclin", "uic": 87286518, "epci": "MEL", "axe": "Douai-Lille", "cat_gc": "Zone dense", "cat_sgp": "PEM périurbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 3", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": 272}, {"nom": "Sequedin", "uic": "87286310", "epci": "MEL", "axe": "Tangentielle Ouest", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B03", "ligne_sncf": "292"}, {"nom": "Somain", "uic": 87345314, "epci": "Cœur d'Ostrevent Agglo", "axe": "Douai-Valenciennes", "cat_gc": "Zone dense", "cat_sgp": "PEM périurbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 1", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": "262"}, {"nom": "Steenbecque", "uic": 87342295, "epci": "Cœur de Flandres Agglo", "axe": "Béthune-Hazebrouck", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 3", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B11", "ligne_sncf": "301"}, {"nom": "Steenwerck", "uic": 87286161, "epci": "Cœur de Flandres Agglo", "axe": "Hazebrouck-Lille", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B10", "ligne_sncf": "295"}, {"nom": "Strazeele", "uic": 87286203, "epci": "Cœur de Flandres Agglo", "axe": "Hazebrouck-Lille", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B10", "ligne_sncf": "295"}, {"nom": "Templeuve", "uic": 87286625, "epci": "CCPC", "axe": "Lille-Orchies", "cat_gc": "Interconnexion SERM", "cat_sgp": "PEM périurbain", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267"}, {"nom": "Thiennes", "uic": 87342287, "epci": "Cœur de Flandres Agglo", "axe": "Béthune-Hazebrouck", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 3", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B11", "ligne_sncf": "301"}, {"nom": "Tourcoing", "uic": 87286542, "epci": "MEL", "axe": "Lille-Tourcoing ", "cat_gc": "Interconnexion nationale", "cat_sgp": "PEM de centralité", "cat_pro": "2- Pôles de rabattement vers les métropoles - rôle important de rabattement ", "prio": "Priorité 2", "etat": "Partiellement constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B01", "ligne_sncf": "278 ? 268"}, {"nom": "Valenciennes", "uic": 87343004, "epci": "CAVM", "axe": "Valenciennes", "cat_gc": "Interconnexion nationale", "cat_sgp": "PEM de centralité", "cat_pro": "1- Pôles régionaux – rôle de diffusion ", "prio": "Priorité 1", "etat": "Partiellement constitué", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B04", "ligne_sncf": "267 ? 254 ? 262 ?"}, {"nom": "Vimy", "uic": 87342576, "epci": "CALL", "axe": "Arras-Lens", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": "301"}, {"nom": "Vitry-en-Artois", "uic": 87342113, "epci": "CC Osartis-Marquion", "axe": "Arras-Douai", "cat_gc": "Bassin de vie sans TC", "cat_sgp": "Halte périurbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Artois Ternois", "ligne_flux": "B08", "ligne_sncf": 272}, {"nom": "Wallers", "uic": 87343301, "epci": "CAPH", "axe": "Douai-Valenciennes", "cat_gc": "Bassin de vie avec TC", "cat_sgp": "Halte en périurbain discontinu", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 2", "etat": "Péri-Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": "262"}, {"nom": "Wattignies - Templemars", "uic": 87286526, "epci": "MEL", "axe": "Douai-Lille", "cat_gc": "Zone dense", "cat_sgp": "Halte urbaine", "cat_pro": "4- Points d’arrêt urbain ou rural – faible rôle de rabattement", "prio": "Priorité 1", "etat": "Urbain", "secteur_ug": "Douaisis Valenciennois", "ligne_flux": "B05", "ligne_sncf": 272}, {"nom": "Wavrin", "uic": 87286419, "epci": "MEL", "axe": "Don-lille", "cat_gc": "Zone dense", "cat_sgp": "Gare périurbaine", "cat_pro": "3- Pôles Relais – rôle de rabattement de proximité", "prio": "Priorité 1", "etat": "Non constitué", "secteur_ug": "Zone Urbaine Lille", "ligne_flux": "B07", "ligne_sncf": 289}];
+
+/* Grille consolidée : fusion Atlas HDF (critères SNCF/AREP Flux) 
+ * + OUTIL PACA (catégorisation opérationnelle).
+ * Critères retirés du terrain (traités en desk/SIG) :
+ *   - Densité pop+emplois (SIG)
+ *   - Cartographie POI (livrable)
+ *   - % voirie cyclable aménagée (mesure SIG)
+ *   - Fréquence TC journalière précise (consultable en desk)
+ */
+
+const SECTIONS = [
+  {
+    id: 'general',
+    title: 'Informations générales',
+    type: 'info'
+  },
+  {
+    id: 'infra',
+    title: 'Infrastructure & sécurité ferroviaire',
+    icon: '🚧',
+    criteria: [
+      {
+        id: 'quai_etat',
+        label: "État général des quais",
+        help: "Revêtement, bordures, désordres apparents. Photos conseillées si dégradations.",
+        scale: 3,
+        labels: ['Mauvais', 'Moyen', 'Bon']
+      },
+      {
+        id: 'bev',
+        label: "Bande d'éveil et de vigilance (BEV)",
+        help: "Présente le long de chaque quai, conforme au RAM SNCF.",
+        scale: 3,
+        labels: ['Absente', 'À compléter', 'Présente']
+      },
+      {
+        id: 'bande_guidage',
+        label: "Bande de guidage (PMR)",
+        help: "Vers guichet, automates, accès quais — visible et continue.",
+        scale: 3,
+        labels: ['Absente', 'Partielle', 'Présente']
+      },
+      {
+        id: 'franch_voies',
+        label: "Franchissement des voies",
+        help: "Passerelle/PASO/OA = 1 ; TVP avec signaux = 0,5 ; TVP sans signaux = 0.",
+        scale: 3,
+        labels: ['TVP non sécurisée', 'TVP + signaux', 'Passerelle / PASO']
+      },
+      {
+        id: 'acc_pmr_quais',
+        label: "Accessibilité PMR aux quais",
+        help: "Ascenseurs, rampes, accès franchissement conformes.",
+        scale: 3,
+        labels: ['Non', 'Partielle', 'Oui']
+      },
+      {
+        id: 'quai_longueur',
+        label: "Longueur des quais adaptée au matériel roulant",
+        help: "À vue : suffisant pour les rames circulantes.",
+        scale: 3,
+        labels: ['Non', 'Limite', 'Oui']
+      },
+      {
+        id: 'accueil_borne',
+        label: "Point d'accueil fixe ou borne d'appel",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'embarq_pmr',
+        label: "Zone d'embarquement PMR identifiée",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      }
+    ]
+  },
+  {
+    id: 'bv',
+    title: 'Bâtiment voyageurs (BV)',
+    icon: '🏛️',
+    criteria: [
+      {
+        id: 'bv_etat',
+        label: "Statut du BV",
+        scale: 'choice',
+        choices: ['Pas de BV', 'BV fermé/désaffecté', 'BV reconverti (autre usage)', 'BV ouvert sans personnel', 'BV ouvert avec personnel']
+      },
+      {
+        id: 'bv_acc',
+        label: "Accessibilité du BV",
+        help: "PMR, cheminement sans obstacle, largeurs portes.",
+        scale: 3,
+        labels: ['Non', 'Partielle', 'Oui']
+      },
+      {
+        id: 'bv_ouverture',
+        label: "Amplitude d'ouverture",
+        help: "Étendue horaire & jours d'ouverture publique.",
+        scale: 3,
+        labels: ['< 1j/sem ou < 3h/j', '> 1j/sem et > 3h/j', '> 4j/sem et > 6h/j']
+      },
+      {
+        id: 'bv_attente',
+        label: "Espace d'attente abrité (BV)",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'bv_guichet',
+        label: "Guichet",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'bv_commerces',
+        label: "Commerces / services humanisés",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      }
+    ]
+  },
+  {
+    id: 'services',
+    title: 'Services voyageurs & information',
+    icon: 'ℹ️',
+    criteria: [
+      {
+        id: 'totem',
+        label: "Totem gare (signalétique identité)",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'horloge',
+        label: "Horloge",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      },
+      {
+        id: 'affich_stat',
+        label: "Affichage statique (plans, carte réseau)",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'affich_dyn',
+        label: "Affichage dynamique des trains (TFT)",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'signal_quais',
+        label: "Signalétique vers quais & sorties",
+        scale: 3,
+        labels: ['Absente', 'Partielle', 'Présente']
+      },
+      {
+        id: 'telesono',
+        label: "Télésonorisation / annonces",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      },
+      {
+        id: 'automate',
+        label: "Automate d'achat de titres TER",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'valideur',
+        label: "Valideurs",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'abri_quai',
+        label: "Abris sur quais",
+        help: "État, nombre suffisant pour la fréquentation.",
+        scale: 3,
+        labels: ['Absents', 'À améliorer', 'Présents']
+      },
+      {
+        id: 'assises',
+        label: "Assises (quais et/ou BV)",
+        scale: 3,
+        labels: ['Absentes', 'Insuffisantes', 'Présentes']
+      },
+      {
+        id: 'toilettes',
+        label: "Toilettes publiques",
+        scale: 2,
+        labels: ['Absentes', 'Présentes']
+      },
+      {
+        id: 'eclairage',
+        label: "Éclairage quais & abords",
+        scale: 3,
+        labels: ['Insuffisant', 'Moyen', 'Bon']
+      },
+      {
+        id: 'poubelles',
+        label: "Poubelles",
+        scale: 3,
+        labels: ['Absentes', 'Simples', 'Tri-flux']
+      },
+      {
+        id: 'wifi',
+        label: "Wifi en gare",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'defib',
+        label: "Défibrillateur",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'videoprot',
+        label: "Vidéoprotection",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      }
+    ]
+  },
+  {
+    id: 'velos',
+    title: 'Intermodalité vélos',
+    icon: '🚲',
+    criteria: [
+      {
+        id: 'vel_continuite',
+        label: "Continuité cyclable jusqu'à la gare",
+        help: "Cheminement cyclable identifié, sans rupture dangereuse.",
+        scale: 3,
+        labels: ['Mauvaise', 'Moyenne', 'Bonne']
+      },
+      {
+        id: 'vel_qualite',
+        label: "Qualité des aménagements cyclables",
+        scale: 3,
+        labels: ['Mauvaise', 'Moyenne', 'Bonne']
+      },
+      {
+        id: 'vel_abri_sec',
+        label: "Abri vélos sécurisé",
+        help: "Fermé, accès contrôlé Passpass idéal.",
+        scale: 3,
+        labels: ['Absent', 'Sans Passpass', 'Avec Passpass']
+      },
+      {
+        id: 'vel_arceaux',
+        label: "Arceaux vélos couverts/non couverts",
+        scale: 2,
+        labels: ['Absents', 'Présents']
+      },
+      {
+        id: 'vel_arceaux_nb',
+        label: "Nombre approximatif d'arceaux",
+        scale: 'number',
+        placeholder: "ex. 12"
+      },
+      {
+        id: 'vel_lls',
+        label: "Vélos / trottinettes en libre-service",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'vel_services',
+        label: "Services vélo en gare (réparation, pompe, etc.)",
+        scale: 2,
+        labels: ['Absents', 'Présents']
+      },
+      {
+        id: 'vel_acc_quais',
+        label: "Accessibilité cyclable aux quais",
+        scale: 2,
+        labels: ['Non', 'Oui']
+      },
+      {
+        id: 'vel_recharge',
+        label: "Borne de recharge VAE",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      }
+    ]
+  },
+  {
+    id: 'tc',
+    title: 'Intermodalité transports en commun (TC)',
+    icon: '🚌',
+    criteria: [
+      {
+        id: 'tc_100',
+        label: "Arrêt TC à moins de 100 m",
+        help: "Bus, tram, métro depuis le parvis.",
+        scale: 2,
+        labels: ['Non', 'Oui']
+      },
+      {
+        id: 'tc_350',
+        label: "Arrêt TC à moins de 350 m",
+        scale: 2,
+        labels: ['Non', 'Oui']
+      },
+      {
+        id: 'tc_frequence',
+        label: "Fréquence visuelle des TC",
+        help: "Estimation à partir des horaires affichés aux arrêts.",
+        scale: 3,
+        labels: ['Faible < 25/j', 'Moyenne 25-50/j', 'Forte > 50/j']
+      },
+      {
+        id: 'tc_info_dyn',
+        label: "Information dynamique TC (écrans prochains passages)",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      },
+      {
+        id: 'tc_signal',
+        label: "Signalétique intermodale extérieure",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      },
+      {
+        id: 'tc_billettique',
+        label: "Automates / validation TCU-TCIU",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      }
+    ]
+  },
+  {
+    id: 'vp',
+    title: 'Intermodalité voiture (VP)',
+    icon: '🚗',
+    criteria: [
+      {
+        id: 'vp_parking',
+        label: "Parking dédié aux usagers gare",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'vp_places_nb',
+        label: "Nombre approximatif de places",
+        scale: 'number',
+        placeholder: "ex. 120"
+      },
+      {
+        id: 'vp_pmr',
+        label: "Places PMR (≥ 2% du parc)",
+        scale: 3,
+        labels: ['Absentes', '< 2%', '≥ 2%']
+      },
+      {
+        id: 'vp_depose',
+        label: "Places dépose-reprise (Kiss&Ride)",
+        scale: 2,
+        labels: ['Absentes', 'Présentes']
+      },
+      {
+        id: 'vp_taxis',
+        label: "Places taxis",
+        scale: 2,
+        labels: ['Absentes', 'Présentes']
+      },
+      {
+        id: 'vp_covoit',
+        label: "Aire de covoiturage",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      },
+      {
+        id: 'vp_recharge',
+        label: "Borne de recharge VE",
+        scale: 2,
+        labels: ['Absente', 'Présente']
+      },
+      {
+        id: 'vp_jalonnement',
+        label: "Jalonnement routier vers la gare",
+        scale: 3,
+        labels: ['Absent', 'Partiel', 'Complet']
+      },
+      {
+        id: 'vp_controle',
+        label: "Contrôle d'accès parking (barrière, badge)",
+        scale: 2,
+        labels: ['Non', 'Oui']
+      }
+    ]
+  },
+  {
+    id: 'urbain',
+    title: 'Insertion urbaine & cheminements piétons',
+    icon: '🏙️',
+    criteria: [
+      {
+        id: 'parvis',
+        label: "Parvis piéton devant la gare",
+        scale: 3,
+        labels: ['Absent', 'Sommaire', 'Qualitatif']
+      },
+      {
+        id: 'pieton_continuite',
+        label: "Continuité piétonne vers la gare",
+        scale: 3,
+        labels: ['Mauvaise', 'Moyenne', 'Bonne']
+      },
+      {
+        id: 'pieton_qualite',
+        label: "Qualité des cheminements piétons",
+        scale: 3,
+        labels: ['Mauvaise', 'Moyenne', 'Bonne']
+      },
+      {
+        id: 'gare_traversante',
+        label: "Gare traversante (accès des deux côtés du faisceau)",
+        scale: 2,
+        labels: ['Non', 'Oui']
+      },
+      {
+        id: 'ecl_abords',
+        label: "Éclairage des abords",
+        scale: 3,
+        labels: ['Insuffisant', 'Moyen', 'Bon']
+      },
+      {
+        id: 'pole_attractivite',
+        label: "Pôle d'attractivité à proximité (< 500 m)",
+        help: "Commerces, administration, école, hôpital…",
+        scale: 2,
+        labels: ['Absent', 'Présent']
+      },
+      {
+        id: 'mairie',
+        label: "Proximité de la mairie",
+        scale: 3,
+        labels: ['> 1500 m', 'Entre 750-1500 m', '< 750 m']
+      }
+    ]
+  },
+  {
+    id: 'synthese',
+    title: 'Synthèse & alertes',
+    icon: '⚠️',
+    criteria: [
+      {
+        id: 'priorite_terrain',
+        label: "Priorité perçue sur le terrain",
+        help: "Ressenti global du visiteur après visite complète.",
+        scale: 4,
+        labels: ['Urgence critique', 'Urgence élevée', 'Modérée', 'Faible']
+      },
+      {
+        id: 'alerte_saturation',
+        label: "Alerte saturation / capacitaire",
+        help: "Quai trop étroit, flux > capacité aux HP.",
+        scale: 2,
+        labels: ['Non', 'Oui']
+      },
+      {
+        id: 'alerte_secu',
+        label: "Alerte sécurité",
+        help: "TVP dangereuse, chemin d'évacuation non-conforme.",
+        scale: 2,
+        labels: ['Non', 'Oui']
+      },
+      {
+        id: 'synthese_libre',
+        label: "Commentaire général de visite",
+        scale: 'text',
+        placeholder: "Remarques transversales, enjeux prioritaires, surprise…"
+      }
+    ]
+  }
+];
+
+/* ==========================================================================
+   STORAGE : window.storage (artifact) avec fallback localStorage (standalone)
+   ========================================================================== */
+const Store = {
+  async set(k, v) {
+    const val = typeof v === 'string' ? v : JSON.stringify(v);
+    try { if (window.storage) { await window.storage.set(k, val); return; } } catch(e) {}
+    try { localStorage.setItem(k, val); } catch(e) { console.warn('Storage failed', e); }
+  },
+  async get(k) {
+    try {
+      if (window.storage) {
+        const r = await window.storage.get(k);
+        return r ? r.value : null;
+      }
+    } catch(e) {}
+    try { return localStorage.getItem(k); } catch(e) { return null; }
+  },
+  async list(prefix) {
+    try {
+      if (window.storage) {
+        const r = await window.storage.list(prefix);
+        return (r && r.keys) ? r.keys : [];
+      }
+    } catch(e) {}
+    try {
+      const out = [];
+      for (let i=0; i<localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (!prefix || k.startsWith(prefix))) out.push(k);
+      }
+      return out;
+    } catch(e) { return []; }
+  },
+  async delete(k) {
+    try { if (window.storage) { await window.storage.delete(k); return; } } catch(e) {}
+    try { localStorage.removeItem(k); } catch(e) {}
+  }
+};
+
+const KEY_PREFIX = 'serm:v1:';
+
+/* ==========================================================================
+   STATE
+   ========================================================================== */
+let state = {
+  route: 'home',  // 'home' | 'picker' | 'form'
+  currentVisite: null, // { gare, data: {critId: {val, note, photoCount}}, meta: {...} }
+  visitesList: [], // résumé pour home
+  searchQuery: ''
+};
+
+/* ==========================================================================
+   HELPERS
+   ========================================================================== */
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast ' + type, 2200);
+}
+
+function countCriteria() {
+  let n = 0;
+  SECTIONS.forEach(s => {
+    if (s.criteria) n += s.criteria.filter(c => c.scale !== 'text' && c.scale !== 'number').length;
+  });
+  return n;
+}
+const TOTAL_CRITERIA = countCriteria();
+
+function countFilled(data) {
+  if (!data) return 0;
+  let n = 0;
+  SECTIONS.forEach(s => {
+    if (!s.criteria) return;
+    s.criteria.forEach(c => {
+      if (c.scale === 'text' || c.scale === 'number') return;
+      if (data[c.id] && data[c.id].val !== undefined && data[c.id].val !== null && data[c.id].val !== '') n++;
+    });
+  });
+  return n;
+}
+
+function progressPct(data) {
+  return Math.round(countFilled(data) / TOTAL_CRITERIA * 100);
+}
+
+function today() {
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+
+function formatDateFR(iso) {
+  if (!iso) return '—';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/* ==========================================================================
+   RENDER : HOME
+   ========================================================================== */
+async function renderHome() {
+  state.route = 'home';
+  const keys = await Store.list(KEY_PREFIX);
+  const visites = [];
+  for (const k of keys) {
+    const raw = await Store.get(k);
+    if (raw) {
+      try {
+        const v = JSON.parse(raw);
+        visites.push({ key: k, ...v });
+      } catch(e) {}
+    }
+  }
+  visites.sort((a,b) => (b.meta?.updated || '').localeCompare(a.meta?.updated || ''));
+  state.visitesList = visites;
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="logo">R</div>
+        <div class="topbar-title">Relevé <span>SERM HDF</span></div>
+      </div>
+      <button class="topbar-action" onclick="showExportMenu()">Exporter</button>
+    </div>
+    <div class="home">
+      <div class="home-kicker">Phase émergence — AREP × G&C</div>
+      <h1 class="home-title">Relevé de <em>terrain</em><br>des 93 gares</h1>
+      <div class="accent-line"></div>
+      <p class="home-lead">
+        Outil de saisie rapide pour les visites SERM Hauts-de-France.
+        <strong>Commence une visite, coche les critères, complète tes notes.</strong>
+        Sauvegarde locale automatique. Export CSV quand tu veux.
+      </p>
+
+      <button class="btn-primary" onclick="goToPicker()">+ Nouvelle visite</button>
+
+      <div class="section-heading">En cours <span class="section-heading-count">${visites.length} gare${visites.length>1?'s':''}</span></div>
+      <div class="visites-list">
+        ${visites.length === 0 ? '<p class="empty">Aucune visite enregistrée. Démarre avec le bouton ci-dessus.</p>' :
+          visites.map(v => {
+            const pct = progressPct(v.data);
+            const g = GARES.find(x => x.nom === v.gare);
+            return `<div class="visite-card" onclick="openVisite('${v.gare.replace(/'/g,"\\'")}')">
+              <div class="visite-card-info">
+                <h4>${v.gare}</h4>
+                <div class="visite-card-meta">
+                  <span>${g?.cat_pro?.substring(0,30) || '—'}</span>
+                  <span>·</span>
+                  <span>${formatDateFR(v.meta?.updated?.slice(0,10))}</span>
+                </div>
+              </div>
+              <div class="visite-card-progress">${pct}<span class="pct">%</span></div>
+            </div>`;
+          }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+/* ==========================================================================
+   RENDER : GARE PICKER
+   ========================================================================== */
+async function renderPicker() {
+  state.route = 'picker';
+  const existingKeys = await Store.list(KEY_PREFIX);
+  const existingNames = new Set(existingKeys.map(k => k.replace(KEY_PREFIX, '')));
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-action" onclick="renderHome()" style="border:none;padding:6px 8px;">← Retour</button>
+      </div>
+      <div class="topbar-title">Choisir une gare</div>
+      <div style="width:60px;"></div>
+    </div>
+    <div class="home">
+      <input type="search" class="gare-search" id="gare-search"
+             placeholder="Rechercher une gare…" autocomplete="off" oninput="filterGares()">
+      <div class="gare-list" id="gare-list"></div>
+    </div>
+  `;
+  state._existingNames = existingNames;
+  filterGares();
+  document.getElementById('gare-search').focus();
+}
+
+function filterGares() {
+  const q = document.getElementById('gare-search').value.trim().toLowerCase();
+  const filtered = GARES.filter(g =>
+    g.nom && g.nom.toLowerCase().includes(q)
+  );
+  const list = document.getElementById('gare-list');
+  if (filtered.length === 0) {
+    list.innerHTML = '<p class="empty" style="padding:20px;">Aucune gare trouvée.</p>';
+    return;
+  }
+  list.innerHTML = filtered.map(g => {
+    const done = state._existingNames && state._existingNames.has(KEY_PREFIX + g.nom);
+    const meta = [g.ligne_flux, g.secteur_ug].filter(Boolean).join(' · ');
+    return `<div class="gare-item ${done ? 'gare-done' : ''}" onclick="startVisite('${g.nom.replace(/'/g,"\\'")}')">
+      <div>
+        <div class="gare-item-name">${g.nom}</div>
+        <div class="gare-item-meta">${meta || '—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ==========================================================================
+   RENDER : VISITE FORM
+   ========================================================================== */
+async function startVisite(gareName) {
+  const existing = await Store.get(KEY_PREFIX + gareName);
+  if (existing) {
+    state.currentVisite = JSON.parse(existing);
+  } else {
+    const gare = GARES.find(g => g.nom === gareName);
+    state.currentVisite = {
+      gare: gareName,
+      gareInfo: gare,
+      data: {},
+      meta: {
+        visiteur: '',
+        date: today(),
+        meteo: '',
+        created: new Date().toISOString(),
+        updated: new Date().toISOString()
+      }
+    };
+    await saveCurrent();
+  }
+  renderForm();
+}
+
+async function openVisite(gareName) {
+  const raw = await Store.get(KEY_PREFIX + gareName);
+  if (raw) {
+    state.currentVisite = JSON.parse(raw);
+    if (!state.currentVisite.gareInfo) {
+      state.currentVisite.gareInfo = GARES.find(g => g.nom === gareName);
+    }
+    renderForm();
+  }
+}
+
+async function saveCurrent() {
+  if (!state.currentVisite) return;
+  state.currentVisite.meta.updated = new Date().toISOString();
+  await Store.set(KEY_PREFIX + state.currentVisite.gare, state.currentVisite);
+}
+
+function renderForm() {
+  state.route = 'form';
+  const v = state.currentVisite;
+  const g = v.gareInfo || {};
+  const pct = progressPct(v.data);
+  const filled = countFilled(v.data);
+
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-action" onclick="renderHome()" style="border:none;padding:6px 8px;">← Accueil</button>
+      </div>
+      <div class="topbar-title">${v.gare}</div>
+      <button class="topbar-action" onclick="deleteVisite()" title="Supprimer">🗑</button>
+    </div>
+    <div class="form-header">
+      <div class="form-header-row">
+        <div style="flex:1;min-width:0;">
+          <div class="form-gare-name">${v.gare}</div>
+          <div class="form-gare-meta">
+            ${[g.cat_pro?.substring(0,40), g.ligne_flux, g.axe].filter(Boolean).join(' · ')}
+          </div>
+        </div>
+        <div class="progress-ring">
+          <svg width="42" height="42" viewBox="0 0 42 42">
+            <circle class="progress-ring-bg" cx="21" cy="21" r="17"></circle>
+            <circle class="progress-ring-fg" cx="21" cy="21" r="17"
+                    stroke-dasharray="${2*Math.PI*17}"
+                    stroke-dashoffset="${2*Math.PI*17 * (1 - pct/100)}"></circle>
+          </svg>
+          <div class="progress-ring-label">${pct}%</div>
+        </div>
+      </div>
+    </div>
+    <div id="sections-container">
+      ${SECTIONS.map((s, idx) => renderSection(s, idx, v.data)).join('')}
+    </div>
+    <div class="bottom-bar">
+      <button class="bar-save" onclick="manualSave()">💾 Sauvegarder</button>
+      <button class="bar-export" onclick="exportCurrentCSV()">⇣ Exporter CSV</button>
+    </div>
+  `;
+}
+
+function renderSection(s, idx, data) {
+  if (s.type === 'info') {
+    return `
+    <div class="section" id="sec-${s.id}">
+      <button class="section-header" onclick="toggleSection('${s.id}')">
+        <div class="section-num">01</div>
+        <div class="section-title">${s.title}</div>
+        <div class="section-chevron">▸</div>
+      </button>
+      <div class="section-body">
+        <div class="info-field">
+          <label class="info-label">Visiteur</label>
+          <input class="info-input" type="text" value="${state.currentVisite.meta.visiteur || ''}"
+                 onchange="updateMeta('visiteur', this.value)" placeholder="Tes initiales">
+        </div>
+        <div class="info-row">
+          <div class="info-field">
+            <label class="info-label">Date de visite</label>
+            <input class="info-input" type="date" value="${state.currentVisite.meta.date || today()}"
+                   onchange="updateMeta('date', this.value)">
+          </div>
+          <div class="info-field">
+            <label class="info-label">Météo</label>
+            <select class="info-input" onchange="updateMeta('meteo', this.value)">
+              <option value="">—</option>
+              <option ${state.currentVisite.meta.meteo==='soleil'?'selected':''} value="soleil">☀️ Soleil</option>
+              <option ${state.currentVisite.meta.meteo==='nuageux'?'selected':''} value="nuageux">☁️ Nuageux</option>
+              <option ${state.currentVisite.meta.meteo==='pluie'?'selected':''} value="pluie">🌧 Pluie</option>
+              <option ${state.currentVisite.meta.meteo==='autre'?'selected':''} value="autre">Autre</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+  const filledInSec = s.criteria.filter(c => c.scale !== 'text' && c.scale !== 'number' && data[c.id]?.val != null && data[c.id].val !== '').length;
+  const totalInSec = s.criteria.filter(c => c.scale !== 'text' && c.scale !== 'number').length;
+  const allDone = filledInSec === totalInSec && totalInSec > 0;
+  return `
+    <div class="section" id="sec-${s.id}">
+      <button class="section-header" onclick="toggleSection('${s.id}')">
+        <div class="section-num">${String(idx+1).padStart(2,'0')}</div>
+        <div class="section-title">${s.title}</div>
+        <div class="section-status ${allDone ? 'done' : ''}">${filledInSec}/${totalInSec}</div>
+        <div class="section-chevron">▸</div>
+      </button>
+      <div class="section-body">
+        ${s.criteria.map(c => renderCriterion(c, data)).join('')}
+      </div>
+    </div>`;
+}
+
+function renderCriterion(c, data) {
+  const v = data[c.id] || {};
+  if (c.scale === 'text') {
+    return `<div class="criterion">
+      <div class="criterion-label">${c.label}</div>
+      <textarea class="criterion-note" placeholder="${c.placeholder || ''}"
+                oninput="setCriterionText('${c.id}', this.value)">${v.val || ''}</textarea>
+    </div>`;
+  }
+  if (c.scale === 'number') {
+    return `<div class="criterion">
+      <div class="criterion-label">${c.label}</div>
+      <input class="info-input" type="number" value="${v.val || ''}"
+             placeholder="${c.placeholder || ''}" 
+             oninput="setCriterionText('${c.id}', this.value)"
+             style="max-width:180px;">
+    </div>`;
+  }
+  if (c.scale === 'choice') {
+    return `<div class="criterion">
+      <div class="criterion-label">${c.label}</div>
+      <select class="info-input" onchange="setCriterionText('${c.id}', this.value)" style="width:100%;">
+        <option value="">—</option>
+        ${c.choices.map(ch => `<option ${v.val===ch?'selected':''} value="${ch}">${ch}</option>`).join('')}
+      </select>
+      ${renderNoteArea(c, v)}
+    </div>`;
+  }
+  const n = c.scale;
+  const vals = n === 2 ? [0,1] : n === 3 ? [0,0.5,1] : n === 4 ? [0,0.33,0.66,1] : [0,0.5,1];
+  const labels = c.labels || vals.map(x => String(x));
+  return `<div class="criterion ${v.note ? 'has-note' : ''}" id="crit-${c.id}">
+    <div class="criterion-label">${c.label}</div>
+    ${c.help ? `<div class="criterion-help">${c.help}</div>` : ''}
+    <div class="rating cols-${n}">
+      ${vals.map((val, i) => `
+        <button class="rating-btn ${v.val === val ? 'active' : ''}" 
+                data-val="${val}"
+                onclick="setCriterion('${c.id}', ${val})">
+          <div class="dot"></div>
+          <div>${labels[i]}</div>
+        </button>
+      `).join('')}
+    </div>
+    <div class="extras-toggle" onclick="toggleExtras('${c.id}')">+ Note &amp; photo</div>
+    <div class="criterion-extras">
+      <textarea class="criterion-note" placeholder="Précision ou contexte…"
+                oninput="setCriterionNote('${c.id}', this.value)">${v.note || ''}</textarea>
+      <div class="photo-input-wrap">
+        <label class="photo-btn">
+          📷 ${v.photoCount ? `<span class="photo-count">${v.photoCount} photo(s)</span>` : 'Ajouter photo'}
+          <input type="file" accept="image/*" capture="environment" multiple 
+                 style="display:none;" onchange="handlePhoto('${c.id}', this)">
+        </label>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderNoteArea(c, v) {
+  return `<textarea class="criterion-note" placeholder="Précision…" style="margin-top:8px;"
+          oninput="setCriterionNote('${c.id}', this.value)">${v.note || ''}</textarea>`;
+}
+
+/* ==========================================================================
+   FORM INTERACTIONS
+   ========================================================================== */
+function toggleSection(id) {
+  const el = document.getElementById('sec-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+function toggleExtras(id) {
+  const el = document.getElementById('crit-' + id);
+  if (el) el.classList.toggle('force-extras');
+}
+
+async function setCriterion(id, val) {
+  const v = state.currentVisite;
+  if (!v.data[id]) v.data[id] = {};
+  v.data[id].val = val;
+  await saveCurrent();
+  // Mise à jour UI minimale (ré-render la section au lieu de tout)
+  refreshSectionStatus();
+  // Màj boutons
+  const btns = document.querySelectorAll(`#crit-${id} .rating-btn, [onclick*="setCriterion('${id}'"]`);
+  const parent = document.getElementById('crit-' + id);
+  if (parent) {
+    parent.querySelectorAll('.rating-btn').forEach(b => {
+      b.classList.toggle('active', parseFloat(b.dataset.val) === val);
+    });
+  }
+}
+
+async function setCriterionText(id, val) {
+  const v = state.currentVisite;
+  if (!v.data[id]) v.data[id] = {};
+  v.data[id].val = val;
+  await saveCurrent();
+}
+
+async function setCriterionNote(id, val) {
+  const v = state.currentVisite;
+  if (!v.data[id]) v.data[id] = {};
+  v.data[id].note = val;
+  await saveCurrent();
+}
+
+async function handlePhoto(id, input) {
+  const files = input.files;
+  if (!files.length) return;
+  const v = state.currentVisite;
+  if (!v.data[id]) v.data[id] = {};
+  v.data[id].photoCount = (v.data[id].photoCount || 0) + files.length;
+  // Note : on ne stocke PAS les photos ici (trop lourd). En prod → upload cloud.
+  await saveCurrent();
+  toast(`${files.length} photo(s) enregistrées (compteur uniquement)`, 'success');
+  // refresh le compteur
+  const countSpan = input.closest('.photo-btn').querySelector('.photo-count');
+  if (countSpan) countSpan.textContent = `${v.data[id].photoCount} photo(s)`;
+  else input.closest('.photo-btn').innerHTML = `📷 <span class="photo-count">${v.data[id].photoCount} photo(s)</span>` + input.outerHTML;
+}
+
+async function updateMeta(key, val) {
+  state.currentVisite.meta[key] = val;
+  await saveCurrent();
+}
+
+function refreshSectionStatus() {
+  const v = state.currentVisite;
+  SECTIONS.forEach((s, idx) => {
+    if (!s.criteria) return;
+    const filled = s.criteria.filter(c => c.scale !== 'text' && c.scale !== 'number' && v.data[c.id]?.val != null && v.data[c.id].val !== '').length;
+    const total = s.criteria.filter(c => c.scale !== 'text' && c.scale !== 'number').length;
+    const el = document.querySelector(`#sec-${s.id} .section-status`);
+    if (el) {
+      el.textContent = `${filled}/${total}`;
+      el.classList.toggle('done', filled === total && total > 0);
+    }
+  });
+  // Màj progress ring global
+  const pct = progressPct(v.data);
+  const ring = document.querySelector('.progress-ring-fg');
+  if (ring) {
+    ring.setAttribute('stroke-dashoffset', 2*Math.PI*17 * (1 - pct/100));
+  }
+  const lbl = document.querySelector('.progress-ring-label');
+  if (lbl) lbl.textContent = pct + '%';
+}
+
+async function manualSave() {
+  await saveCurrent();
+  toast('Sauvegardé', 'success');
+}
+
+async function deleteVisite() {
+  if (!state.currentVisite) return;
+  if (!confirm(`Supprimer la visite de ${state.currentVisite.gare} ? Action irréversible.`)) return;
+  await Store.delete(KEY_PREFIX + state.currentVisite.gare);
+  state.currentVisite = null;
+  toast('Visite supprimée');
+  renderHome();
+}
+
+/* ==========================================================================
+   NAVIGATION
+   ========================================================================== */
+function goToPicker() { renderPicker(); }
+
+/* ==========================================================================
+   EXPORTS
+   ========================================================================== */
+async function showExportMenu() {
+  const modal = document.getElementById('modal');
+  const content = document.getElementById('modal-content');
+  const keys = await Store.list(KEY_PREFIX);
+  content.innerHTML = `
+    <h3 class="serif">Exporter</h3>
+    <p>${keys.length} visite(s) en base. Choisis un format :</p>
+    <button class="btn-primary" onclick="exportAllCSV()">📊 CSV toutes visites (compatible BASE_DONNEE)</button>
+    <button class="btn-secondary" onclick="exportAllJSON()">🗂 JSON sauvegarde complète</button>
+    <button class="btn-secondary" onclick="importJSON()">↥ Importer JSON (restauration)</button>
+    <button class="btn-secondary" onclick="closeModal()" style="color:var(--taupe);">Fermer</button>
+  `;
+  modal.classList.add('show');
+}
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+async function exportCurrentCSV() {
+  if (!state.currentVisite) return;
+  const rows = buildCSVRows([state.currentVisite]);
+  downloadCSV(rows, `releve_${state.currentVisite.gare.replace(/\s+/g,'_')}.csv`);
+  toast('CSV téléchargé', 'success');
+}
+
+async function exportAllCSV() {
+  const keys = await Store.list(KEY_PREFIX);
+  const visites = [];
+  for (const k of keys) {
+    const raw = await Store.get(k);
+    if (raw) try { visites.push(JSON.parse(raw)); } catch(e) {}
+  }
+  if (!visites.length) return toast('Aucune visite à exporter', 'error');
+  const rows = buildCSVRows(visites);
+  downloadCSV(rows, `releves_SERM_HDF_${today()}.csv`);
+  toast(`${visites.length} visite(s) exportée(s)`, 'success');
+  closeModal();
+}
+
+function buildCSVRows(visites) {
+  const headers = ['nom_gare', 'uic', 'axe', 'ligne_flux', 'secteur_ug', 'categorisation_projetee',
+                   'visiteur', 'date_visite', 'meteo', 'progression_pct'];
+  // Ajoute une colonne par critère
+  SECTIONS.forEach(s => {
+    if (!s.criteria) return;
+    s.criteria.forEach(c => {
+      headers.push(`${s.id}.${c.id}`);
+      if (c.scale !== 'text' && c.scale !== 'number') {
+        headers.push(`${s.id}.${c.id}.note`);
+      }
+    });
+  });
+  const rows = [headers];
+  visites.forEach(v => {
+    const row = [
+      v.gare,
+      v.gareInfo?.uic || '',
+      v.gareInfo?.axe || '',
+      v.gareInfo?.ligne_flux || '',
+      v.gareInfo?.secteur_ug || '',
+      v.gareInfo?.cat_pro || '',
+      v.meta?.visiteur || '',
+      v.meta?.date || '',
+      v.meta?.meteo || '',
+      progressPct(v.data)
+    ];
+    SECTIONS.forEach(s => {
+      if (!s.criteria) return;
+      s.criteria.forEach(c => {
+        const d = v.data[c.id] || {};
+        row.push(d.val != null ? d.val : '');
+        if (c.scale !== 'text' && c.scale !== 'number') {
+          row.push(d.note || '');
+        }
+      });
+    });
+    rows.push(row);
+  });
+  return rows;
+}
+
+function downloadCSV(rows, filename) {
+  const csv = rows.map(r => r.map(c => {
+    const s = String(c ?? '');
+    return /[",;\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+  }).join(';')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function exportAllJSON() {
+  const keys = await Store.list(KEY_PREFIX);
+  const dump = {};
+  for (const k of keys) dump[k] = await Store.get(k);
+  const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `sauvegarde_SERM_HDF_${today()}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Sauvegarde JSON téléchargée', 'success');
+  closeModal();
+}
+
+function importJSON() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
+    try {
+      const dump = JSON.parse(text);
+      let n = 0;
+      for (const [k, v] of Object.entries(dump)) {
+        if (k.startsWith(KEY_PREFIX)) { await Store.set(k, v); n++; }
+      }
+      toast(`${n} visite(s) importée(s)`, 'success');
+      closeModal();
+      renderHome();
+    } catch(err) {
+      toast('JSON invalide', 'error');
+    }
+  };
+  input.click();
+}
+
+/* ==========================================================================
+   BOOT
+   ========================================================================== */
+window.addEventListener('DOMContentLoaded', () => {
+  renderHome();
+});
+</script>
+</body>
+</html>
